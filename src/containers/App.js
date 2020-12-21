@@ -4,6 +4,8 @@ import SearchBox from '../components/SearchBox';
 import './App.css'; // This will import the font
 import Scroll from '../components/Scroll'; // Scroll the robots so that the Search bar is always visible
 
+import ErrorBoundary from '../components/ErrorBoundary';
+
 // robots must be destructure because the file ./robots may have multiple exports. 
 // It is not a single export like ./Card file. If there was another const variable
 // called say 'cats', then it will have to be dereferenced as well like this: { robots, cats }
@@ -82,7 +84,9 @@ class App extends Component {
           <h1 className='f1'>RoboFriends</h1>
           <SearchBox searchChange={this.onSearchChange} />
           <Scroll>
-            <CardList robots={filteredRobots}/>
+            <ErrorBoundary>
+              <CardList robots={filteredRobots}/>
+            </ErrorBoundary>
           </Scroll>
         </div>
       );

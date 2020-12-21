@@ -5,6 +5,11 @@ const CardList = ({robots}) => {
   // No need to use the index passed in second argument of map
   //const cardComponent = robots.map((robot, i) => {
   
+  // Bogus if statement to test the ErrorBoundary component
+  // if (true) {
+  //   throw Error('NOOOOOOOO!');
+  // }
+
   const cardArray = robots.map((robot) => {
     // When doing a loop always remember to give a unique key
     return(
