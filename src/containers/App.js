@@ -1,9 +1,9 @@
-import React, { Component} from 'react'; // Short hand to reference Component from React
+//import React, { Component, useState, useEffect } from 'react'; // Short hand to reference Component from React
+import React, { useState, useEffect } from 'react';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import './App.css'; // This will import the font
 import Scroll from '../components/Scroll'; // Scroll the robots so that the Search bar is always visible
-
 import ErrorBoundary from '../components/ErrorBoundary';
 
 // robots must be destructure because the file ./robots may have multiple exports. 
@@ -24,31 +24,64 @@ import ErrorBoundary from '../components/ErrorBoundary';
 //   );
 // };
 
+// Notice that everytime we want to use state we have to use a class. 
+// Now since the release of React 16.8 we can use hooks to have state 
+// inside of functions without writing a class.
+// This new function useState is the first “Hook” that was provided. 
 
-class App extends Component {
-  // Make use of the constructor to use the State. The constructor is part of the
-  // so called life cycle hooks of react. https://reactjs.org/docs/react-component.html
+// Here we build our the App component with hooks therefore avoiding class.
+// The useState hook is essentially for internal state management.
+// The useEffect hook is essentially for life-cycle methods.
 
-  // Also be aware that this sort of component with changing state is no 'pure' so they
-  // reside in 'containers' folder.
-  constructor() {
-    // super must be called to be able to use this below
-    super()
-    this.state = {
-      robots: [],
-      searchfield: ''
-    };
-  }
+function App() {
+  const [robots, setRobots] = useState([]);
+  const [searchField, setSearchField] = useState('');
+
+  // We use componentDidMount and componentDidUpdate so we will have a useEffect hook
+  // We won't use the unsubscription since we don't use componentWillUnmount. 
+  useEffect(() => {
+      fetchRobots();
+      // return () => { releaseRobots} if such function was necessary to release robots.
+
+      // useEffect takes an additional parameter that is used to trigger or not the re-rendering.
+      // If that parameter and one of the useCase values have changed then the App will re-render.
+      // BY setting the parameter to a none changing empty array then the App will behave like
+      // the lifecycle componentDidMount function and will render only once. 
+  }, []);
+
+
+// class App extends Component {
+//   // Make use of the constructor to use the State. The constructor is part of the
+//   // so called life cycle hooks of react. https://reactjs.org/docs/react-component.html
+
+//   // Also be aware that this sort of component with changing state is no 'pure' so they
+//   // reside in 'containers' folder.
+//   constructor() {
+//     // super must be called to be able to use this below
+//     super()
+//     this.state = {
+//       robots: [],
+//       searchfield: ''
+//     };
+//   }
 
   // Notice that arrow function is not used because componentDidMount is part of React
-  componentDidMount() {
-      // Now load the imported robots from the js file
-      //this.setState({robots: robots});
+  // componentDidMount() {
+  //     // Now load the imported robots from the js file
+  //     //this.setState({robots: robots});
 
-      // Let's use canned users from json place holder
-      fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(users => this.setState({robots: users}));
+  //     // Let's use canned users from json place holder
+  //     fetch('https://jsonplaceholder.typicode.com/users')
+  //     .then(response => response.json())
+  //     .then(users => this.setState({robots: users}));
+  // }
+
+  const fetchRobots = () => {
+    // Let's use canned users from json place holder
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response => response.json())
+    .then(users => setRobots(users))
+    .catch(console.log);
   }
 
   // Careful here !!! 
@@ -56,10 +89,13 @@ class App extends Component {
   // To prevent this make sure to make the event a parameter of a function like so:
   // Change onSearchChange(event) to onSearchChange = (event) => {...}
   // onSearchChange(event) {
-  onSearchChange = (event) => {
-    // Just like Flutter, now update the state
-    this.setState({searchfield: event.target.value});
 
+  // Now that the App is converted into a function, onSearcChange con be turned into a const
+  // It is now a variable inside a function.
+  const onSearchChange = (event) => {
+    // Just like Flutter, now update the state
+    //this.setState({searchfield: event.target.value});
+    setSearchField(event.target.value);
     // Filter the robots with name included in the seach field. And later, move this function to the render() function
     // const filteredRobots = this.state.robots.filter((robot) => {
     //   return robot.name.toLowerCase().includes(this.state.searchfield);
@@ -69,12 +105,12 @@ class App extends Component {
   // A class has a render function. The robots can now be accessed from the state
   // and not from the imported robots. The App can now change the value of the state
   // pass it down to the children.
-  render() {
+  //render() {
 
-    const { robots, searchfield } = this.state;
+    //const { robots, searchfield } = this.state;
 
     const filteredRobots = robots.filter((robot) => {
-      return robot.name.toLowerCase().includes(searchfield);
+      return robot.name.toLowerCase().includes(searchField.toLowerCase());
     });
 
     return !robots.length ? 
@@ -82,7 +118,9 @@ class App extends Component {
       (
         <div className='tc'>
           <h1 className='f1'>RoboFriends</h1>
-          <SearchBox searchChange={this.onSearchChange} />
+          {/* We are no longer in a class so remove the this keyword */}
+          {/* <SearchBox searchChange={this.onSearchChange} /> */}
+          <SearchBox searchChange={onSearchChange} />
           <Scroll>
             <ErrorBoundary>
               <CardList robots={filteredRobots}/>
@@ -90,7 +128,8 @@ class App extends Component {
           </Scroll>
         </div>
       );
-  }
+  //}
 }
+
 export default App;
 

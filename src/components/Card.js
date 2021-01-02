@@ -1,7 +1,8 @@
 import React from 'react';
 
+// Class components are "functions" that render something.
 // const Card = (props) => {
-  // even better
+// even better by  destructuring into individual properties
 const Card = ({name, email, id}) => {
   return (
     <div className='tc bg-light-green dib br3 pa3 ma2 grow bw2 shadow-5'>
